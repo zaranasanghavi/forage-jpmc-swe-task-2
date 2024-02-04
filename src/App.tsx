@@ -8,7 +8,7 @@ import './App.css';
  */
 interface IState {
   data: ServerRespond[],
-  showGraph: boolean,
+  showGraph: boolean, //shows graph
 }
 
 /**
@@ -23,7 +23,7 @@ class App extends Component<{}, IState> {
       // data saves the server responds.
       // We use this state to parse data down to the child element (Graph) as element property
       data: [],
-      showGraph: false,
+      showGraph: false, //graph hidden until user clicks 'start streaming data'
     };
   }
 
@@ -31,8 +31,8 @@ class App extends Component<{}, IState> {
    * Render Graph react component with state.data parse as property data
    */
   renderGraph() {
-    if(this.state.showGraph){
-      return (<Graph data={this.state.data}/>)
+  if (this.state.showGraph){
+    return (<Graph data={this.state.data}/>) //ensure graph doesnt render until 'start streaming data' button clicked
     }
   }
 
@@ -40,23 +40,28 @@ class App extends Component<{}, IState> {
    * Get new data from server and update the state with the new data
    */
   getDataFromServer() {
-    let x = 0;
-    const interval = setInterval(() => {
-      DataStreamer.getData((serverResponds: ServerRespond[]) => {
-        // Update the state by creating a new array of data that consists of
-        // Previous data in the state and the new data from server
-        this.setState({
-          data: serverResponds,
-          showGraph: true,
-        });
-      });
-      x++;
-      if(x > 1000){
-        clearInterval(interval);
-      }
-    }, 100);
-  }
+  let x = 0; // Initialize a variable 'x' to 0 to count the number of iterations.
 
+    // Set up a repeating interval (every 100 milliseconds) for fetching data.
+  const interval = setInterval(() =>{
+   // Call a function named 'DataStreamer.getData()' to fetch data from the server.
+      DataStreamer.getData((serverResponds: ServerRespond[]) => {
+      // Inside the callback function:
+      // Update the state of the component using 'this.setState()'.
+      this.setState({
+        data: serverResponds, // Set the 'data' state with the fetched data.
+        showGraph: true, // Set the 'showGraph' state to 'true'
+        });
+    });
+
+     // Increment the 'x' variable, counting the number of iterations
+    x++;
+    if(x > 1000){
+        clearInterval(interval);  // If 'x' becomes greater than 1000, clear the repeating interval.
+    }
+  }, 100); // The interval will repeat every 100 milliseconds.
+
+  }
 
   /**
    * Render the App react component
